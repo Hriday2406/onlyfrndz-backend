@@ -2,7 +2,7 @@ const { body, validationResult } = require("express-validator");
 const db = require("../db/queries");
 const expressAsyncHandler = require("express-async-handler");
 
-const userMembershipController = [
+const setMembershipController = [
   [
     body("membershipPassword")
       .trim()
@@ -12,7 +12,7 @@ const userMembershipController = [
   expressAsyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(400).json({ errors: errors.array() });
+      return res.json({ status: 400, errors: errors.array() });
 
     const { membershipPassword } = req.body;
 
@@ -32,4 +32,14 @@ const userMembershipController = [
   }),
 ];
 
-module.exports = userMembershipController;
+const getMembershipController = expressAsyncHandler(async (req, res) => {
+  const status = await db.getMembershipStatus(req.user.id);
+  if (!status)
+    return res.json({
+      status: 500,
+      message: "Error getting membership status",
+    });
+  res.json({ status: 200, membershipStatus: status });
+});
+
+module.exports = { setMembershipController, getMembershipController };

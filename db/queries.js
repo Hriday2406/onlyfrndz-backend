@@ -55,10 +55,23 @@ async function setMembershipStatus(userId, status) {
   }
 }
 
+async function getMembershipStatus(userId) {
+  try {
+    const result = await pool.query(
+      "SELECT membership_status FROM users WHERE id = $1",
+      [userId]
+    );
+    return result.rows[0].membership_status;
+  } catch (error) {
+    throw new Error(`Error getting membership status: ${error.message}`);
+  }
+}
+
 module.exports = {
   createUser,
   getUserById,
   getUserByUsername,
   getUserByEmail,
   setMembershipStatus,
+  getMembershipStatus,
 };

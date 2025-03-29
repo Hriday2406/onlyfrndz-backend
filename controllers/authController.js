@@ -31,7 +31,7 @@ const signUpController = [
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(400).json({ errors: errors.array() });
+      return res.json({ status: 400, errors: errors.array() });
 
     const { fullName, username, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -62,7 +62,7 @@ const loginController = [
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(400).json({ errors: errors.array() });
+      return res.json({ status: 400, errors: errors.array() });
 
     const { username, password } = req.body;
 
@@ -104,7 +104,7 @@ const adminLoginController = [
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(400).json({ errors: errors.array() });
+      return res.json({ status: 400, errors: errors.array() });
 
     const { username, password } = req.body;
 
