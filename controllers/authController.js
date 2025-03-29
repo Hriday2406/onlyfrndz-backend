@@ -90,4 +90,50 @@ const loginController = [
   }),
 ];
 
-module.exports = { signUpController, loginController };
+const adminLoginController = [
+  [
+    body("username")
+      .trim()
+      .isLength({ min: 1, max: 50 })
+      .withMessage("Username must be between 1 and 50 characters"),
+    body("password")
+      .trim()
+      .isLength({ min: 6, max: 50 })
+      .withMessage("Password must be between 6 and 50 characters"),
+  ],
+  asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(400).json({ errors: errors.array() });
+
+    const { username, password } = req.body;
+
+    const adminUserData = await db.getUserById(2);
+    const passwordMatch = await bcrypt.compare(
+      password,
+      adminUserData.password
+    );
+    if (username !== adminUserData.username || !passwordMatch)
+      return res.json({
+        status: 400,
+        message: "Incorrect username or password",
+      });
+
+    jwt.sign(
+      { id: adminUserData.id },
+      process.env.SESSION_SECRET,
+      { expiresIn: "1d" },
+      (err, token) => {
+        if (err)
+          return res.json({ status: 500, message: `Error logging in: ${err}` });
+        res.json({
+          status: 200,
+          message: "Admin logged in successfully",
+          token,
+        });
+      }
+    );
+  }),
+];
+
+module.exports = { signUpController, loginController, adminLoginController };
