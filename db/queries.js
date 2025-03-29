@@ -43,4 +43,22 @@ async function getUserByEmail(email) {
   }
 }
 
-module.exports = { createUser, getUserById, getUserByUsername, getUserByEmail };
+async function setMembershipStatus(userId, status) {
+  try {
+    await pool.query("UPDATE users SET membership_status = $1 WHERE id = $2", [
+      status,
+      userId,
+    ]);
+    return true;
+  } catch (error) {
+    throw new Error(`Error setting membership status: ${error.message}`);
+  }
+}
+
+module.exports = {
+  createUser,
+  getUserById,
+  getUserByUsername,
+  getUserByEmail,
+  setMembershipStatus,
+};
