@@ -1,6 +1,6 @@
 const { body, validationResult } = require("express-validator");
 const db = require("../db/queries");
-const expressAsyncHandler = require("express-async-handler");
+const asyncHandler = require("express-async-handler");
 
 const setMembershipController = [
   [
@@ -9,7 +9,7 @@ const setMembershipController = [
       .isLength({ min: 6, max: 50 })
       .withMessage("Password must be between 6 and 50 characters"),
   ],
-  expressAsyncHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
       return res.json({ status: 400, errors: errors.array() });
@@ -32,7 +32,7 @@ const setMembershipController = [
   }),
 ];
 
-const getMembershipController = expressAsyncHandler(async (req, res) => {
+const getMembershipController = asyncHandler(async (req, res) => {
   const status = await db.getMembershipStatus(req.user.id);
   if (!status)
     return res.json({
