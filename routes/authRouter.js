@@ -2,7 +2,6 @@ const { Router } = require("express");
 const {
   signUpController,
   loginController,
-  adminLoginController,
 } = require("../controllers/authController");
 const { authenticateToken } = require("../middleware/authMiddleware");
 
@@ -14,7 +13,6 @@ authRouter.get("/", (req, res) => {
 
 authRouter.post("/signup", signUpController);
 authRouter.post("/login", loginController);
-authRouter.post("/admin", adminLoginController);
 
 authRouter.get("/test", authenticateToken, (req, res) => {
   res.json({ status: 200, message: "Hello User Autheticator!" });
