@@ -3,7 +3,6 @@ const {
   getAllMessagesController,
   createMessageController,
   deleteMessageController,
-  adminDeleteMessageController,
 } = require("../controllers/messageController");
 const {
   authenticateToken,
@@ -19,10 +18,5 @@ messageRouter.get("/", (req, res) => {
 messageRouter.get("/all", checkUser, getAllMessagesController);
 messageRouter.post("/", authenticateToken, createMessageController);
 messageRouter.delete("/:id", authenticateToken, deleteMessageController);
-messageRouter.delete(
-  "/admin/:id",
-  authenticateToken,
-  adminDeleteMessageController
-);
 
 module.exports = messageRouter;

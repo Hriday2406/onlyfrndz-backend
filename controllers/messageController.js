@@ -63,48 +63,32 @@ const createMessageController = [
 
 const deleteMessageController = asyncHandler(async (req, res) => {
   const { id } = req.params;
-
-  const user = req.user;
   const messageData = await db.getMessageById(id);
+  const user = req.user;
 
   if (!messageData)
     return res.json({ status: 400, message: "Message does not exist" });
 
-  if (user.id !== messageData.user_id)
-    return res.json({ status: 400, message: "You do not have permission" });
+  if (user.id === messageData.user_id) {
+    const status = await db.deleteMessage(id);
+    if (!status)
+      return res.json({ status: 400, message: "Error deleting message" });
+    return res.json({ status: 200, message: "Message deleted successfully" });
+  }
 
-  const status = await db.deleteMessage(id);
-  if (!status)
-    return res.json({ status: 400, message: "Error deleting message" });
+  const userData = await db.getUserById(user.id);
+  if (userData.is_admin) {
+    const status = await db.deleteMessage(id);
+    if (!status)
+      return res.json({ status: 400, message: "Error deleting message" });
+    return res.json({ status: 200, message: "Message deleted successfully" });
+  }
 
-  res.json({ status: 200, message: "Message deleted successfully" });
-});
-
-const adminDeleteMessageController = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-
-  const user = req.user;
-  const messageData = await db.getMessageById(id);
-
-  if (!messageData)
-    return res.json({ status: 400, message: "Message does not exist" });
-
-  if (user.id !== 2)
-    return res.json({
-      status: 400,
-      message: "You do not have admin permission",
-    });
-
-  const status = await db.deleteMessage(id);
-  if (!status)
-    return res.json({ status: 400, message: "Error deleting message" });
-
-  res.json({ status: 200, message: "Message deleted successfully" });
+  return res.json({ status: 400, message: "You do not have permission" });
 });
 
 module.exports = {
   getAllMessagesController,
   createMessageController,
   deleteMessageController,
-  adminDeleteMessageController,
 };
