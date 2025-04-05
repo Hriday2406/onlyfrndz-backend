@@ -95,6 +95,18 @@ async function getUserByEmail(email) {
   }
 }
 
+async function updateUserPassword(userId, password) {
+  try {
+    await pool.query("UPDATE users SET password = $1 WHERE id = $2", [
+      password,
+      userId,
+    ]);
+    return true;
+  } catch (error) {
+    throw new Error(`Error updating user password: ${error.message}`);
+  }
+}
+
 async function setMembershipStatus(userId, status) {
   try {
     await pool.query("UPDATE users SET is_member = $1 WHERE id = $2", [
@@ -128,6 +140,7 @@ module.exports = {
   getUserById,
   getUserByUsername,
   getUserByEmail,
+  updateUserPassword,
   setMembershipStatus,
   getMembershipStatus,
 };
